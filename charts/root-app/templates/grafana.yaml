@@ -14,7 +14,7 @@ spec:
       values: |
         persistence:
           enabled: true
-          storageClassName: "standard"   # Use your storage class name here
+          storageClassName: "local-path"
           size: 10Gi
         adminPassword: "change-me"
         service:
