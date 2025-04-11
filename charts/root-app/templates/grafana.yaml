@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: dev
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 6.64.4          # specify the desired version; update as needed
+    helm:
+      values: |
+        persistence:
+          enabled: true
+          storageClassName: "standard"   # Use your storage class name here
+          size: 10Gi
+        adminPassword: "change-me"
+        service:
+          type: ClusterIP
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          annotations:
+            kubernetes.io/ingress.class: traefik
+          hosts:
+            - grafana.zhaho.duckdns.org
+          paths:
+            - /
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: grafana            # Ensure this namespace exists or include a namespace manifest
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
